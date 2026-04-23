@@ -1,3 +1,5 @@
+import * as bootstrap from 'bootstrap/dist/js/bootstrap.min.js'
+import{productos} from '../data/producto.js'
 export function mostrarHero(){
     return `
      <section id="hero" class="bg-success bg-gradient text-white py-5">
@@ -47,30 +49,39 @@ export function mostrarCatalogo(){
           <p class="text-muted">Selecciona tus frutas favoritas</p>
         </div>
         <div class="row g-4" id="lista-productos">
-          <div class="col-sm-6 col-md-4 col-lg-3">
+          ${productos.map((producto)=>(mostrarCardProducto(producto))).join('')}
+          
+        </div>
+      </div>
+    </section>
+    `
+}
+function mostrarCardProducto(producto){
+  return`
+  <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="card h-100 shadow-sm">
               <div class="position-relative">
-                <img src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=300&fit=crop" alt="banana"
+                <img src="${producto.image}" alt="${producto.name}"
                 class="card-img-top"
                 style="height: 200px; object-fit: cover;">
                 <span class="badge bg-success position-absolute top-0 end-0 m-2">Frutas</span>
               </div>
               <div class="card-body d-flex flex-column">
-                <h5 class="card-title">Platano</h5>
-                <p class="card-text text-muted small flex-grow-1">Plátanos maduros ricos en potasio, ideales para batidos.</p>
+                <h5 class="card-title">${producto.name}</h5>
+                <p class="card-text text-muted small flex-grow-1">${producto.description}</p>
                 <div class="d-flex justify-content-between align-items-center mt-3 px-2">
-                  <span class="fw-bold text-success fs-4">5 PEN</span>
+                  <span class="fw-bold text-success fs-4">${producto.price} PEN</span>
                   <span class="text-muted small">X KG</span>
                 </div>
               </div>
               <div class="card-footer bg-white border-top-0 pb-3">
                 <div class="d-grid gap-2">
-                  <button class="btn btn-outline-success">
+                  <button class="btn btn-outline-success btn-mostrar-detalle" data-id="${producto.id}">
                     <iconify-icon
                       icon= "mdi:eye-plus"
                       class="me-1">
                     </iconify-icon>
-                    Ver Detaller
+                    Ver Detalles
                   </button>
                   <button class="btn btn-success">
                     <iconify-icon
@@ -83,8 +94,41 @@ export function mostrarCatalogo(){
               </div>
             </div>
           </div>
-        </div>
+  `
+}
+export function mostrarModalDetalles(){
+  return`
+  <!-- Modal -->
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="producto-nombre">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-    </section>
-    `
+      <div class="modal-body">
+        <p id="producto-descripcion"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+`
+}
+function mostrarDetalle(productoId){
+  const producto = productos.find((producto)=>(producto.id===productoId))
+  document.getElementById("producto-nombre").textContent=producto.name;
+  const detalleModal = new bootstrap.Modal(document.getElementById("detalleModal"));
+  detalleModal.show();
+}
+export function configuracionPrincipalEventos(){
+  document.querySelectorAll(".btn-mostrar-detalle").forEach(btn => {
+  btn.addEventListener('click', (evento)=>{
+    const productoId = parseInt(evento.currentTarget.dataset.id)
+    mostrarDetalle(productoId);
+  })
+  })
 }
